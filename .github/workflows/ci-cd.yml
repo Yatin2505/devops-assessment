@@ -6,6 +6,7 @@ on:
       - main
 
 jobs:
+
   build-and-test:
 
     runs-on: ubuntu-latest
@@ -28,3 +29,33 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t devops-assessment:latest .
+
+
+  deploy:
+
+    needs: build-and-test
+
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t devops-assessment:latest .
+
+      - name: Stop old container
+        shell: powershell
+        run: |
+          $container = docker ps -aq --filter "name=devops-app"
+          if ($container) {
+              docker rm -f devops-app
+          }
+
+      - name: Start new container
+        run: |
+          docker run -d -p 3000:3000 --restart unless-stopped --name devops-app devops-assessment:latest
+
+      - name: Verify container
+        run: docker ps
