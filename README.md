@@ -11,3 +11,5 @@ A simple Node.js and Express application created for the DevOps Skill Assessment
 
 ```bash
 npm install
+
+CI/CD deployment test
